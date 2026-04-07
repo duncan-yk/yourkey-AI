@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Your Key — Property Onboarding</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--green:#1D9E75;--green-dark:#17876A;--black:#1a1a1a;--gray:#f5f5f0;--border:#e0e0da;--text-muted:#666;--red:#e53e3e}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,sans-serif;background:var(--gray);color:var(--black);min-height:100vh;font-size:16px}
+
+/* HEADER */
+.header{background:var(--black);color:#fff;padding:14px 16px 0;position:sticky;top:0;z-index:100}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.logo{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.logo span{color:var(--green)}
+.step-counter{font-size:12px;opacity:.5}
+.step-pills{display:flex;gap:4px;padding-bottom:0}
+.step-pill{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.2);transition:background .3s;cursor:pointer}
+.step-pill.active{background:#fff}
+.step-pill.done{background:var(--green)}
+
+/* STEP LABELS */
+.step-labels{display:flex;background:#fff;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.step-labels::-webkit-scrollbar{display:none}
+.step-label-tab{flex:none;padding:10px 14px;font-size:12px;font-weight:500;color:var(--text-muted);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:all .2s}
+.step-label-tab.active{color:var(--black);border-bottom-color:var(--black)}
+.step-label-tab.done{color:var(--green)}
+
+/* CONTAINER */
+.container{max-width:560px;margin:0 auto;padding:20px 16px 80px}
+.step{display:none}
+.step.visible{display:block}
+
+/* SECTION */
+.section-head{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.section-head:first-child{margin-top:0}
+
+/* FIELDS */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13px;font-weight:500;color:var(--text-muted);margin-bottom:5px}
+.field label .req{color:var(--red);margin-left:2px}
+.field input,.field select,.field textarea{
+  width:100%;font-size:16px;padding:12px 14px;
+  border:1.5px solid var(--border);border-radius:10px;
+  background:#fff;color:var(--black);font-family:inherit;
+  transition:border-color .15s;-webkit-appearance:none;appearance:none
+}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--black)}
+.field textarea{min-height:90px;resize:vertical;line-height:1.5}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* TOGGLES */
+.toggle-group{display:flex;flex-wrap:wrap;gap:7px}
+.tgl{padding:9px 16px;border:1.5px solid var(--border);border-radius:20px;font-size:14px;color:var(--text-muted);cursor:pointer;background:#fff;user-select:none;transition:all .15s}
+.tgl.on{background:var(--black);color:#fff;border-color:var(--black)}
+.tgl.green.on{background:var(--green);border-color:var(--green);color:#fff}
+
+/* AMENITIES */
+.amenity-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.am{padding:11px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;color:var(--text-muted);cursor:pointer;background:#fff;user-select:none;transition:all .15s;line-height:1.3}
+.am.on{background:#e8f8f3;color:var(--green);border-color:var(--green);font-weight:500}
+
+/* NAVIGATION */
+.nav-fixed{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:10px;z-index:100}
+.nav-fixed button{flex:1;padding:13px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;background:#fff;color:var(--black);transition:all .15s}
+.nav-fixed button.primary{background:var(--black);color:#fff;border-color:var(--black)}
+.nav-fixed button.submit{background:var(--green);border-color:var(--green);color:#fff}
+.nav-fixed button:active{transform:scale(.97)}
+
+/* STATUS */
+.status-box{padding:14px 16px;border-radius:10px;font-size:14px;font-weight:500;margin-top:16px;display:none;line-height:1.5}
+.status-box.ok{background:#e8f8f3;color:var(--green);border:1.5px solid var(--green);display:block}
+.status-box.err{background:#fff5f5;color:var(--red);border:1.5px solid var(--red);display:block}
+
+/* SUCCESS SCREEN */
+.success-screen{text-align:center;padding:40px 20px;display:none}
+.success-screen.visible{display:block}
+.success-icon{width:64px;height:64px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.success-icon svg{width:32px;height:32px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.success-title{font-size:22px;font-weight:700;margin-bottom:8px}
+.success-sub{font-size:15px;color:var(--text-muted);margin-bottom:28px;line-height:1.6}
+.success-btn{display:inline-block;padding:14px 32px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer}
+
+@media(max-width:360px){.field-row{grid-template-columns:1fr}.amenity-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo">Your <span>Key</span> — Field Onboarding</div>
+    <div class="step-counter" id="step-counter">1 / 6</div>
+  </div>
+  <div class="step-pills" id="step-pills">
+    <div class="step-pill active"></div>
+    <div class="step-pill"></div>
+    <div class="step-pill"></div>
+    <div class="step-pill"></div>
+    <div class="step-pill"></div>
+    <div class="step-pill"></div>
+  </div>
+</div>
+
+<div class="step-labels" id="step-labels">
+  <div class="step-label-tab active" onclick="goStep(0)">Basics</div>
+  <div class="step-label-tab" onclick="goStep(1)">Unit</div>
+  <div class="step-label-tab" onclick="goStep(2)">Utilities</div>
+  <div class="step-label-tab" onclick="goStep(3)">Amenities</div>
+  <div class="step-label-tab" onclick="goStep(4)">Billing</div>
+  <div class="step-label-tab" onclick="goStep(5)">Notes</div>
+</div>
+
+<div class="container">
+
+<!-- SUCCESS SCREEN -->
+<div class="success-screen" id="success-screen">
+  <div class="success-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+  <div class="success-title">Property submitted!</div>
+  <div class="success-sub">The new property has been added to the<br>GE Master database in Notion.</div>
+  <button class="success-btn" onclick="resetForm()">Add another property</button>
+</div>
+
+<!-- STEP 0: BASICS -->
+<div class="step visible" id="step0">
+  <div class="section-head">Property basics</div>
+  <div class="field"><label>Full address<span class="req">*</span></label><input type="text" id="f_address" placeholder="e.g. 602 - 624 8 Ave SE" autocomplete="street-address"/></div>
+  <div class="field-row">
+    <div class="field"><label>Unit number<span class="req">*</span></label><input type="text" id="f_unit" placeholder="e.g. 602"/></div>
+    <div class="field"><label>Building name</label><input type="text" id="f_building" placeholder="e.g. Colours"/></div>
+  </div>
+  <div class="field"><label>Owner / client name<span class="req">*</span></label><input type="text" id="f_client" placeholder="Full name" autocomplete="name"/></div>
+  <div class="field-row">
+    <div class="field"><label>Owner email</label><input type="email" id="f_email" placeholder="owner@email.com" autocomplete="email"/></div>
+    <div class="field"><label>Owner phone</label><input type="tel" id="f_phone" placeholder="(403) 555-0100" autocomplete="tel"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field"><label>City</label><input type="text" id="f_city" placeholder="Calgary" value="Calgary"/></div>
+    <div class="field"><label>Property type</label>
+      <select id="f_type"><option value="">Select...</option><option>Condo</option><option>House</option><option>Townhouse</option></select>
+    </div>
+  </div>
+  <div class="field"><label>Tier</label>
+    <div class="toggle-group">
+      <div class="tgl" onclick="tog(this,'f_tier','1')">1 — High</div>
+      <div class="tgl" onclick="tog(this,'f_tier','2')">2 — Mid</div>
+      <div class="tgl on" onclick="tog(this,'f_tier','3')">3 — Standard</div>
+    </div>
+    <input type="hidden" id="f_tier" value="3"/>
+  </div>
+  <div class="field"><label>Account focal</label>
+    <div class="toggle-group">
+      <div class="tgl green" onclick="tog(this,'f_focal','Kathy')">Kathy</div>
+      <div class="tgl green" onclick="tog(this,'f_focal','Ferlie')">Ferlie</div>
+      <div class="tgl green" onclick="tog(this,'f_focal','Isabella')">Isabella</div>
+    </div>
+    <input type="hidden" id="f_focal"/>
+  </div>
+</div>
+
+<!-- STEP 1: UNIT -->
+<div class="step" id="step1">
+  <div class="section-head">Layout</div>
+  <div class="field-row">
+    <div class="field"><label>Bedrooms</label><input type="number" id="f_beds" placeholder="2" min="0" inputmode="numeric"/></div>
+    <div class="field"><label>Bathrooms</label><input type="number" id="f_baths" placeholder="1" min="0" step="0.5" inputmode="decimal"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field"><label>Max occupancy</label><input type="number" id="f_occupancy" placeholder="4" min="1" inputmode="numeric"/></div>
+    <div class="field"><label>Stove type</label>
+      <select id="f_stove"><option value="">Select...</option><option>Electric</option><option>Induction</option><option>Gas</option></select>
+    </div>
+  </div>
+  <div class="field"><label>Property type</label>
+    <div class="toggle-group">
+      <div class="tgl" onclick="tog(this,'f_housetype','House')">House</div>
+      <div class="tgl" onclick="tog(this,'f_housetype','Condo')">Condo</div>
+      <div class="tgl" onclick="tog(this,'f_housetype','Townhouse')">Townhouse</div>
+    </div>
+    <input type="hidden" id="f_housetype"/>
+  </div>
+
+  <div class="section-head">Access & entry</div>
+  <div class="field"><label>Check-in process</label><textarea id="f_checkin" placeholder="How do guests access the unit? Lock box code, fob pickup, key handoff..."></textarea></div>
+  <div class="field"><label>Intercom / dial code</label><input type="text" id="f_intercom" placeholder="e.g. Press #602 at main entrance"/></div>
+  <div class="field"><label>Do owners live on site?</label>
+    <div class="toggle-group">
+      <div class="tgl" onclick="tog(this,'f_ownerlive','No')">No</div>
+      <div class="tgl" onclick="tog(this,'f_ownerlive','Yes')">Yes</div>
+      <div class="tgl" onclick="tog(this,'f_ownerlive','Yes, upper')">Yes — upper</div>
+      <div class="tgl" onclick="tog(this,'f_ownerlive','Yes, lower')">Yes — lower</div>
+    </div>
+    <input type="hidden" id="f_ownerlive"/>
+  </div>
+  <div class="field"><label>Keys / fobs provided to guests</label><textarea id="f_keys" placeholder="What keys/fobs do guests receive? What do they access?"></textarea></div>
+  <div class="field"><label>Building management company</label><input type="text" id="f_bldgmgmt" placeholder="Company name"/></div>
+</div>
+
+<!-- STEP 2: UTILITIES -->
+<div class="step" id="step2">
+  <div class="section-head">Parking</div>
+  <div class="field"><label>Parking available?</label>
+    <div class="toggle-group">
+      <div class="tgl" onclick="tog(this,'f_parking','Yes')">Yes</div>
+      <div class="tgl" onclick="tog(this,'f_parking','No')">No</div>
+    </div>
+    <input type="hidden" id="f_parking"/>
+  </div>
+  <div class="field-row">
+    <div class="field"><label>Stall number</label><input type="text" id="f_stallnum" placeholder="e.g. Stall 14"/></div>
+    <div class="field"><label>Height limit</label><input type="text" id="f_parkheight" placeholder="e.g. 6'2&quot;"/></div>
+  </div>
+  <div class="field"><label>Parking process</label><textarea id="f_parkprocess" placeholder="How do guests park? Access codes, procedures..."></textarea></div>
+  <div class="field"><label>Visitor parking</label><input type="text" id="f_visitorpark" placeholder="Location and process"/></div>
+
+  <div class="section-head">WiFi</div>
+  <div class="field-row">
+    <div class="field"><label>Network name</label><input type="text" id="f_wifi" placeholder="Network name" autocomplete="off"/></div>
+    <div class="field"><label>Password</label><input type="text" id="f_wifipass" placeholder="Password" autocomplete="off"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field"><label>Modem location</label><input type="text" id="f_modem" placeholder="e.g. Hall closet"/></div>
+    <div class="field"><label>Provider</label><input type="text" id="f_isp" placeholder="e.g. Shaw, Telus"/></div>
+  </div>
+
+  <div class="section-head">Systems</div>
+  <div class="field"><label>Emergency water shutoff</label><input type="text" id="f_water" placeholder="e.g. Under kitchen sink"/></div>
+  <div class="field-row">
+    <div class="field"><label>Furnace filter size</label><input type="text" id="f_furnacefilter" placeholder="e.g. 16x25x1"/></div>
+    <div class="field"><label>Furnace room</label><input type="text" id="f_furnaceroom" placeholder="Location"/></div>
+  </div>
+  <div class="field"><label>Electrical panel</label><input type="text" id="f_panel" placeholder="Location, locked?"/></div>
+  <div class="field"><label>Winterization</label>
+    <div class="toggle-group">
+      <div class="tgl" onclick="tog(this,'f_winter','Us')">Your Key</div>
+      <div class="tgl" onclick="tog(this,'f_winter','Client')">Client</div>
+    </div>
+    <input type="hidden" id="f_winter"/>
+  </div>
+  <div class="field"><label>Snow removal</label>
+    <div class="toggle-group">
+      <div class="tgl" onclick="tog(this,'f_snow','Us')">Your Key</div>
+      <div class="tgl" onclick="tog(this,'f_snow','Client')">Client</div>
+    </div>
+    <input type="hidden" id="f_snow"/>
+  </div>
+</div>
+
+<!-- STEP 3: AMENITIES -->
+<div class="step" id="step3">
+  <div class="section-head">Unit amenities — tap to select</div>
+  <div class="amenity-grid" id="unit-am"></div>
+  <div class="section-head">Building amenities</div>
+  <div class="amenity-grid" id="bldg-am"></div>
+  <div class="field" style="margin-top:14px"><label>Shared spaces — details</label><textarea id="f_sharedspaces" placeholder="Gym, pool, hot tub — location, hours, access..."></textarea></div>
+</div>
+
+<!-- STEP 4: BILLING -->
+<div class="step" id="step4">
+  <div class="section-head">Billing</div>
+  <div class="field"><label>Management fee %</label><input type="text" id="f_mgmtfee" placeholder="e.g. 20%" inputmode="decimal"/></div>
+  <div class="field"><label>GST on invoice?</label>
+    <div class="toggle-group">
+      <div class="tgl" onclick="tog(this,'f_gst_inv','Yes')">Yes</div>
+      <div class="tgl" onclick="tog(this,'f_gst_inv','No')">No</div>
+    </div><input type="hidden" id="f_gst_inv"/>
+  </div>
+  <div class="field"><label>Tourism levy on invoice?</label>
+    <div class="toggle-group">
+      <div class="tgl" onclick="tog(this,'f_levy_inv','Yes')">Yes</div>
+      <div class="tgl" onclick="tog(this,'f_levy_inv','No')">No</div>
+    </div><input type="hidden" id="f_levy_inv"/>
+  </div>
+  <div class="field"><label>GST on listing?</label>
+    <div class="toggle-group">
+      <div class="tgl" onclick="tog(this,'f_gst_list','Yes')">Yes</div>
+      <div class="tgl" onclick="tog(this,'f_gst_list','No')">No</div>
+    </div><input type="hidden" id="f_gst_list"/>
+  </div>
+  <div class="field"><label>Tourism levy on listing?</label>
+    <div class="toggle-group">
+      <div class="tgl" onclick="tog(this,'f_levy_list','Yes')">Yes</div>
+      <div class="tgl" onclick="tog(this,'f_levy_list','No')">No</div>
+    </div><input type="hidden" id="f_levy_list"/>
+  </div>
+  <div class="field"><label>Other billing notes</label><textarea id="f_billingnotes" placeholder="Any special arrangements..."></textarea></div>
+
+  <div class="section-head">License</div>
+  <div class="field-row">
+    <div class="field"><label>License number</label><input type="text" id="f_license" placeholder="STR #"/></div>
+    <div class="field"><label>Renewal date</label><input type="date" id="f_licensedate"/></div>
+  </div>
+</div>
+
+<!-- STEP 5: NOTES -->
+<div class="step" id="step5">
+  <div class="section-head">Listing links</div>
+  <div class="field"><label>Listing URL(s)</label><textarea id="f_listing" placeholder="Airbnb, VRBO, direct booking URLs" rows="3"></textarea></div>
+  <div class="field"><label>iGuide / virtual tour</label><input type="url" id="f_iguide" placeholder="https://..." inputmode="url"/></div>
+  <div class="field"><label>Guest portal link</label><input type="url" id="f_guestportal" placeholder="https://..." inputmode="url"/></div>
+  <div class="field"><label>Operto link</label><input type="url" id="f_operto" placeholder="https://..." inputmode="url"/></div>
+
+  <div class="section-head">Property notes</div>
+  <div class="field"><label>Garbage & recycling</label><textarea id="f_garbage" placeholder="Bin locations, collection days..."></textarea></div>
+  <div class="field"><label>Owner maintenance escalation</label><textarea id="f_ownermaint" placeholder="How to handle maintenance with this owner..."></textarea></div>
+  <div class="field"><label>Emergency contact</label><textarea id="f_emergency" placeholder="Name, phone, relationship..."></textarea></div>
+  <div class="field"><label>Paint notes</label><input type="text" id="f_paint" placeholder="Brand, colour code, finish"/></div>
+  <div class="field"><label>General notes</label><textarea id="f_notes" placeholder="Anything else the team should know..."></textarea></div>
+
+  <div class="status-box" id="status-box"></div>
+</div>
+
+</div><!-- /container -->
+
+<!-- FIXED NAV -->
+<div class="nav-fixed" id="nav-fixed">
+  <button id="btn-back" onclick="navBack()" style="display:none">← Back</button>
+  <button id="btn-next" class="primary" onclick="navNext()">Next →</button>
+</div>
+
+<script>
+const TOKEN = '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';
+const DB_ID = '32dc074e62db80329357d1c357890c63';
+const TOTAL = 6;
+let cur = 0;
+
+const UNIT_AM = ['Air conditioning','Air humidifier','Air purifier','Balcony','Blender','Cable TV','Coffee machine','Dishwasher','Dryer','Electric car charger','Fire extinguisher','Fire stick','First aid kit','Fridge','Hair dryer','Iron + ironing board','Kettle','Laundry in unit','Microwave','Oven','Pots & pans','Silverware','Smart thermostat','Sofa bed','Toaster','Towels provided','Washer','WiFi'];
+const BLDG_AM = ['BBQ area','Bike storage','Concierge','EV charging','Fire pit','Gym','Hot tub','Package lockers','Pet friendly','Pool','Rooftop access','Sauna / steam room','Visitor parking'];
+const uState = {}, bState = {};
+
+function buildAmenities() {
+  if (document.getElementById('unit-am').children.length) return;
+  UNIT_AM.forEach(a => {
+    uState[a] = false;
+    const d = document.createElement('div');
+    d.className='am'; d.textContent=a;
+    d.onclick=()=>{uState[a]=!uState[a];d.classList.toggle('on',uState[a]);};
+    document.getElementById('unit-am').appendChild(d);
+  });
+  BLDG_AM.forEach(a => {
+    bState[a] = false;
+    const d = document.createElement('div');
+    d.className='am'; d.textContent=a;
+    d.onclick=()=>{bState[a]=!bState[a];d.classList.toggle('on',bState[a]);};
+    document.getElementById('bldg-am').appendChild(d);
+  });
+}
+
+function tog(el, id, val) {
+  el.closest('.toggle-group').querySelectorAll('.tgl').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById(id).value=val;
+}
+
+function updateNav() {
+  document.getElementById('step-counter').textContent=(cur+1)+' / '+TOTAL;
+  const pills=document.querySelectorAll('.step-pill');
+  const tabs=document.querySelectorAll('.step-label-tab');
+  pills.forEach((p,i)=>{p.classList.toggle('done',i<cur);p.classList.toggle('active',i===cur);});
+  tabs.forEach((t,i)=>{t.classList.toggle('done',i<cur);t.classList.toggle('active',i===cur);});
+  document.getElementById('btn-back').style.display=cur>0?'block':'none';
+  const nb=document.getElementById('btn-next');
+  if(cur===TOTAL-1){nb.className='primary submit';nb.textContent='Submit to Notion';}
+  else{nb.className='primary';nb.textContent='Next →';}
+  // scroll active tab into view
+  const activeTab=tabs[cur];
+  if(activeTab) activeTab.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+}
+
+function goStep(n) {
+  document.getElementById('step'+cur).classList.remove('visible');
+  cur=n;
+  document.getElementById('step'+cur).classList.add('visible');
+  if(cur===3) buildAmenities();
+  updateNav();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function navBack(){if(cur>0) goStep(cur-1);}
+function navNext(){
+  if(cur===0 && !v('f_address').trim()){alert('Please enter the property address');return;}
+  if(cur===0 && !v('f_client').trim()){alert('Please enter the owner name');return;}
+  if(cur===TOTAL-1){submitToNotion();return;}
+  goStep(cur+1);
+}
+
+const v=id=>(document.getElementById(id)||{}).value||'';
+const rt=s=>({rich_text:[{text:{content:String(s).substring(0,2000)}}]});
+
+async function submitToNotion() {
+  const btn=document.getElementById('btn-next');
+  const box=document.getElementById('status-box');
+  btn.disabled=true; btn.textContent='Submitting...';
+  box.className='status-box'; box.style.display='none';
+
+  const amenities=[
+    ...Object.entries(uState).filter(([,v])=>v).map(([k])=>k),
+    ...Object.entries(bState).filter(([,v])=>v).map(([k])=>k)
+  ].join(', ');
+
+  const notes=[
+    v('f_checkin')&&'Check-in: '+v('f_checkin'),
+    v('f_keys')&&'Keys/fobs: '+v('f_keys'),
+    v('f_intercom')&&'Intercom: '+v('f_intercom'),
+    v('f_parkprocess')&&'Parking: '+v('f_parkprocess'),
+    v('f_visitorpark')&&'Visitor parking: '+v('f_visitorpark'),
+    v('f_water')&&'Water shutoff: '+v('f_water'),
+    v('f_panel')&&'Electrical panel: '+v('f_panel'),
+    v('f_furnaceroom')&&'Furnace room: '+v('f_furnaceroom'),
+    v('f_sharedspaces')&&'Shared spaces: '+v('f_sharedspaces'),
+    v('f_garbage')&&'Garbage/recycling: '+v('f_garbage'),
+    v('f_ownermaint')&&'Owner maintenance: '+v('f_ownermaint'),
+    v('f_emergency')&&'Emergency contact: '+v('f_emergency'),
+    v('f_paint')&&'Paint: '+v('f_paint'),
+    v('f_billingnotes')&&'Billing notes: '+v('f_billingnotes'),
+    amenities&&'Amenities: '+amenities,
+    v('f_notes')&&'Notes: '+v('f_notes'),
+  ].filter(Boolean).join('\n\n');
+
+  // Long tier property name from DB
+  const TIER_PROP='Tier (Internal Language, no to be used externally) 1: Highest Priority = Higher value property, higher maintenance client, or high likelihood of continued business. GO THROUGH PORTFOLIO MANAGER WHENEVER POSSIBLE VS CONTACTING CLIENT DIRECTLY. 2: Closer to DT, higher earning, or good relationship with client 3: Lower value, low likelihood of continued business, etc.';
+
+  const props={};
+  if(v('f_address')) props['Address']=rt(v('f_address'));
+  if(v('f_unit')) props['Unit Number']=rt(v('f_unit'));
+  if(v('f_building')) props['Building Name']=rt(v('f_building'));
+  if(v('f_client')) props['Client']=rt(v('f_client'));
+  if(v('f_email')) props['Email']={email:v('f_email')};
+  if(v('f_phone')) props['Contact Number']={phone_number:v('f_phone')};
+  if(v('f_city')) props['City']=rt(v('f_city'));
+  if(v('f_housetype')||v('f_type')) props['House, Condo, or Townhouse']=rt(v('f_housetype')||v('f_type'));
+  if(v('f_tier')) props[TIER_PROP]={number:parseInt(v('f_tier'))};
+  if(v('f_ownerlive')) props['Do owners live on site?']=rt(v('f_ownerlive'));
+  if(v('f_beds')) props['Beds']={number:parseFloat(v('f_beds'))};
+  if(v('f_baths')) props['Bathrooms']={number:parseFloat(v('f_baths'))};
+  if(v('f_occupancy')) props['Occupancy (# of Guests)']={number:parseInt(v('f_occupancy'))};
+  if(v('f_stove')) props['What type of stove? Electric, induction, gas?']=rt(v('f_stove'));
+  if(v('f_bldgmgmt')) props['Building Management Company']=rt(v('f_bldgmgmt'));
+  if(v('f_wifi')) props['Wifi Network']=rt(v('f_wifi'));
+  if(v('f_wifipass')) props['Wifi Password']=rt(v('f_wifipass'));
+  if(v('f_modem')) props['Internet Modem Location']=rt(v('f_modem'));
+  if(v('f_isp')) props['Provider']=rt(v('f_isp'));
+  if(v('f_furnacefilter')) props['Furnace filter SIZE']=rt(v('f_furnacefilter'));
+  if(v('f_parking')) props['Parking (Yes/ No) Stall #']=rt(v('f_parking')+(v('f_stallnum')?' — '+v('f_stallnum'):''));
+  if(v('f_parkheight')) props['Parking Height and Measurements']=rt(v('f_parkheight'));
+  if(v('f_winter')) props['Winterization: Handled by us or client?']=rt(v('f_winter'));
+  if(v('f_snow')) props['Snow Removal: Handled by us or client?']=rt(v('f_snow'));
+  if(v('f_mgmtfee')) props['Management Fee']=rt(v('f_mgmtfee'));
+  if(v('f_gst_inv')) props['Charge GST (invoice)']=rt(v('f_gst_inv'));
+  if(v('f_levy_inv')) props['Tourism Levy (invoice)']=rt(v('f_levy_inv'));
+  if(v('f_gst_list')) props['Charge GST (listing)']=rt(v('f_gst_list'));
+  if(v('f_levy_list')) props['Tourism Levy (listing)']=rt(v('f_levy_list'));
+  if(v('f_license')) props['License Number']=rt(v('f_license'));
+  if(v('f_licensedate')) props['License Renewal Date']={date:{start:v('f_licensedate')}};
+  const listing=v('f_listing').split('\n')[0].trim();
+  if(listing.startsWith('http')) props['Listing Link(s)']={url:listing};
+  const ig=v('f_iguide');
+  if(ig.startsWith('http')) props['iGuide / Virutal Tour Link(s)']={url:ig};
+  const gp=v('f_guestportal');
+  if(gp.startsWith('http')) props['NEW GUEST PORTAL LINK']={url:gp};
+  const op=v('f_operto');
+  if(op.startsWith('http')) props['Operto Guest Portal Link']={url:op};
+  if(notes) props['Notes']=rt(notes);
+
+  try {
+    const r=await fetch('https://api.notion.com/v1/pages',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+TOKEN,'Notion-Version':'2022-06-28','Content-Type':'application/json'},
+      body:JSON.stringify({parent:{database_id:DB_ID},properties:props})
+    });
+    if(r.ok){
+      document.querySelector('.container').style.display='none';
+      document.getElementById('nav-fixed').style.display='none';
+      document.getElementById('success-screen').classList.add('visible');
+      document.querySelector('.container').appendChild(document.getElementById('success-screen'));
+      document.querySelector('.container').style.display='block';
+    } else {
+      const e=await r.json();
+      box.className='status-box err';
+      box.textContent='Error: '+(e.message||'Submission failed. Check your connection and try again.');
+      btn.disabled=false; btn.textContent='Retry submission';
+    }
+  } catch(e){
+    box.className='status-box err';
+    box.textContent='Network error — check your connection and retry.';
+    btn.disabled=false; btn.textContent='Retry submission';
+  }
+}
+
+function resetForm(){location.reload();}
+updateNav();
+</script>
+</body>
+</html>
