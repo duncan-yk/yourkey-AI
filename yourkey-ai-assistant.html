@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Your Key — AI Assistant</title>
+<title>Your Key AI Assistant</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap');
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-:root{
-  --green:#1D9E75;--green-dim:#e8f8f3;
-  --black:#111;--gray:#f5f5f2;--border:#e4e4de;
-  --muted:#999;--shadow:0 2px 16px rgba(0,0,0,.09);
-}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--green:#1D9E75;--green-dim:#e8f8f3;--black:#111;--gray:#f5f5f2;--border:#e4e4de;--muted:#999;--shadow:0 2px 16px rgba(0,0,0,.09)}
 body{font-family:'DM Sans',sans-serif;background:var(--gray);color:var(--black);min-height:100vh;display:flex;flex-direction:column}
+
+
+
+/* HEADER */
 .header{background:var(--black);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .logo{display:flex;align-items:center;gap:10px}
 .logo-mark{width:26px;height:26px;background:var(--green);border-radius:6px;display:flex;align-items:center;justify-content:center}
@@ -30,27 +30,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--gray);color:var(--black);
 .input-card{width:100%;max-width:580px;display:flex;flex-direction:column;gap:10px}
 
 /* PROPERTY ROW */
-.property-row{position:relative;display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:border-color .15s}
-.property-row:focus-within{border-color:var(--green)}
+.prop-wrap{position:relative}
+.prop-row{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:border-color .15s}
+.prop-row:focus-within{border-color:var(--green)}
 .prop-icon{font-size:15px;flex-shrink:0}
-.prop-label{font-size:11px;font-weight:600;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.04em;white-space:nowrap;flex-shrink:0}
-.prop-divider{width:1px;height:16px;background:var(--border);flex-shrink:0}
+.prop-lbl{font-size:11px;font-weight:600;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.04em;white-space:nowrap;flex-shrink:0}
+.prop-div{width:1px;height:16px;background:var(--border);flex-shrink:0}
 .prop-input{flex:1;border:none;outline:none;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--black);background:transparent}
 .prop-input::placeholder{color:#bbb}
 
 /* DROPDOWN */
-.prop-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1.5px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:100;overflow:hidden;display:none;max-height:240px;overflow-y:auto}
-.prop-dropdown.open{display:block}
-.prop-opt{padding:11px 14px;font-size:14px;cursor:pointer;border-bottom:1px solid var(--border)}
-.prop-opt:last-child{border-bottom:none}
-.prop-opt:hover,.prop-opt.hi{background:var(--green-dim)}
-.prop-opt b{font-weight:600;color:var(--green)}
+.prop-dd{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1.5px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:100;display:none;max-height:240px;overflow-y:auto}
+.prop-dd.open{display:block}
+.dd-item{padding:11px 14px;font-size:14px;cursor:pointer;border-bottom:1px solid var(--border)}
+.dd-item:last-child{border-bottom:none}
+.dd-item:hover,.dd-item.hi{background:var(--green-dim)}
+.dd-item b{font-weight:600;color:var(--green)}
+.dd-msg{padding:12px 14px;font-size:13px;color:var(--muted);text-align:center}
 
-/* SELECTED PILL */
+/* PILL */
 .prop-pill{display:none;align-items:center;gap:8px;background:var(--green-dim);border:1.5px solid var(--green);border-radius:12px;padding:9px 14px}
 .prop-pill.on{display:flex}
-.prop-pill-txt{font-size:13px;font-weight:600;color:var(--green);flex:1}
-.prop-pill-x{background:none;border:none;cursor:pointer;font-size:18px;color:var(--green);line-height:1;padding:0}
+.pill-txt{font-size:13px;font-weight:600;color:var(--green);flex:1}
+.pill-x{background:none;border:none;cursor:pointer;font-size:18px;color:var(--green);line-height:1;padding:0}
 
 /* ASK BAR */
 .ask-row{display:flex;gap:8px;align-items:flex-end}
@@ -97,56 +99,32 @@ body{font-family:'DM Sans',sans-serif;background:var(--gray);color:var(--black);
 </head>
 <body>
 
+<!-- No key overlay needed - API calls go through n8n -->
+
 <div class="header">
   <div class="logo">
-    <div class="logo-mark">
-      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    </div>
+    <div class="logo-mark"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
     <div class="logo-text">Your <span>Key</span> Assistant</div>
   </div>
-  <div class="badge">AI · BETA</div>
+  <div class="badge">AI</div>
 </div>
 
 <!-- HOME PAGE -->
 <div id="home-page">
-  <div class="home-icon">
-    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-  </div>
+  <div class="home-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
   <div class="home-title">Ask me anything</div>
-  <div class="home-sub">Guest issues, property details, operational questions — type below and I'll find the answer.</div>
-
+  <div class="home-sub">Guest issues, property details, operational questions. Search for a property for specific answers.</div>
   <div class="input-card">
-    <!-- Property selector -->
-    <div style="position:relative" id="home-prop-wrap">
-      <div class="prop-pill" id="home-pill">
-        <span class="prop-pill-txt" id="home-pill-txt"></span>
-        <button class="prop-pill-x" onclick="clearProp('home')">×</button>
-      </div>
-      <div class="property-row" id="home-prop-row">
-        <span class="prop-icon">📍</span>
-        <span class="prop-label">PROPERTY</span>
-        <div class="prop-divider"></div>
-        <input type="text" class="prop-input" id="home-prop-input"
-          placeholder="Type to search properties..."
-          autocomplete="off"
-          oninput="onPropInput(this,'home')"
-          onkeydown="onPropKey(event,'home')">
-      </div>
-      <div class="prop-dropdown" id="home-prop-dd"></div>
+    <div class="prop-wrap" id="h-pw">
+      <div class="prop-pill" id="h-pill"><span class="pill-txt" id="h-pill-txt"></span><button class="pill-x" onclick="clearProp('h')">x</button></div>
+      <div class="prop-row" id="h-pr"><span class="prop-icon">&#128205;</span><span class="prop-lbl">PROPERTY</span><div class="prop-div"></div><input type="text" class="prop-input" id="h-pi" placeholder="Search by address, building, or box number..." autocomplete="off" oninput="propIn(this,'h')" onkeydown="propKey(event,'h')"></div>
+      <div class="prop-dd" id="h-dd"></div>
     </div>
-
-    <!-- Ask bar -->
     <div class="ask-row">
-      <textarea class="ask-input" id="home-ask"
-        placeholder="e.g. Guest says the door code isn't working..."
-        rows="1"
-        onkeydown="handleKey(event,'home')"
-        oninput="autoResize(this)"></textarea>
-      <button class="send-btn" id="home-send" onclick="send('home')">
-        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      </button>
+      <textarea class="ask-input" id="h-ask" placeholder="e.g. Guest says the door code isn't working..." rows="1" onkeydown="hk(event,'h')" oninput="ar(this)"></textarea>
+      <button class="send-btn" id="h-btn" onclick="send('h')"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
     </div>
-    <div class="hint">Searches Knowledge Base · GE Master · SOPs</div>
+    <div class="hint">Searches Knowledge Base &middot; GE Master &middot; SOPs</div>
   </div>
 </div>
 
@@ -155,384 +133,234 @@ body{font-family:'DM Sans',sans-serif;background:var(--gray);color:var(--black);
   <div class="chat-msgs" id="chat-msgs"></div>
   <div class="chat-bottom">
     <div class="chat-bottom-inner">
-      <div style="position:relative" id="chat-prop-wrap">
-        <div class="prop-pill" id="chat-pill">
-          <span class="prop-pill-txt" id="chat-pill-txt"></span>
-          <button class="prop-pill-x" onclick="clearProp('chat')">×</button>
-        </div>
-        <div class="property-row" id="chat-prop-row">
-          <span class="prop-icon">📍</span>
-          <span class="prop-label">PROPERTY</span>
-          <div class="prop-divider"></div>
-          <input type="text" class="prop-input" id="chat-prop-input"
-            placeholder="Type to search properties..."
-            autocomplete="off"
-            oninput="onPropInput(this,'chat')"
-            onkeydown="onPropKey(event,'chat')">
-        </div>
-        <div class="prop-dropdown" id="chat-prop-dd"></div>
+      <div class="prop-wrap" id="c-pw">
+        <div class="prop-pill" id="c-pill"><span class="pill-txt" id="c-pill-txt"></span><button class="pill-x" onclick="clearProp('c')">x</button></div>
+        <div class="prop-row" id="c-pr"><span class="prop-icon">&#128205;</span><span class="prop-lbl">PROPERTY</span><div class="prop-div"></div><input type="text" class="prop-input" id="c-pi" placeholder="Search properties..." autocomplete="off" oninput="propIn(this,'c')" onkeydown="propKey(event,'c')"></div>
+        <div class="prop-dd" id="c-dd"></div>
       </div>
       <div class="ask-row">
-        <textarea class="ask-input" id="chat-ask"
-          placeholder="Ask a follow-up..."
-          rows="1"
-          onkeydown="handleKey(event,'chat')"
-          oninput="autoResize(this)"></textarea>
-        <button class="send-btn" id="chat-send" onclick="send('chat')">
-          <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
+        <textarea class="ask-input" id="c-ask" placeholder="Ask a follow-up..." rows="1" onkeydown="hk(event,'c')" oninput="ar(this)"></textarea>
+        <button class="send-btn" id="c-btn" onclick="send('c')"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// ── CONFIG ──────────────────────────────────────────────────────
-const ANTHROPIC_KEY = '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';
-const NOTION_TOKEN  = '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';
-const KB_DB_ID      = '7b324a42-e2bd-445f-8423-e93dccf64592';
-const GE_DB_ID      = '32dc074e-62db-81f4-86c1-000b8d740f68';
+// ── PROXY CONFIG ─────────────────────────────────────────────────
+// All AI calls go through n8n which holds the API key securely
+const PROXY_URL = 'http://165.245.233.195:5678/webhook/yourkey-ai';
 
-// ── STATE ───────────────────────────────────────────────────────
-const sel = { home: null, chat: null };   // selected property per ctx
-let ddResults = { home: [], chat: [] };
-let ddIdx     = { home: -1, chat: -1 };
-let ddTimer   = null;
+// ── PROPERTY SEARCH ──────────────────────────────────────────────
+const PROPS = [
+  '1010 615 6 Ave SE Verve Box 3','606 135 13 Ave SW Colours Box 12',
+  '323R 9A St NW Annex Box 39','317R 9A St NW Annex Box 36','325R 9A St NW Annex Box 40',
+  '2 3812 Parkhill Pl SW Box 25','1 3812 Parkhill Pl SW Box 24',
+  '1906 1010 6th St SW Box 21','2304 1010 6th St SW Box 59',
+  '202 1010 6th St SW Box 66','1302 1010 6th St SW Box 58','706 1010 6th St SW Box 88',
+  '912 ERA 455 1st Ave NE Box 89','914 ERA 455 1st Ave NE Box 90',
+  '1213 ERA 455 1st Ave NE Box 105','105 210 ERA 123 4th St NE',
+  '107 306 ERA 455 1st Ave NE','1809 1188 3 St SE Box 20',
+  '303 5th Ave NE Box 70','516 2nd St NE Box 67','520 2nd St NE Box 69',
+  '307 2505 17 Ave SW Casel Box 35','406 Polo Park Box 86',
+  '1108 Premiere Way SE Castle Box 82','273 Livingston View NW Box 63',
+  '21 Kinlea Common NW Box 29','18 Country Village Gate NE Box 18',
+  '77 Corner Meadow Garden Box 128','111 Creekview Gardens Box 119',
+  '404 Cranbrook Gardens Box 132','349 Sage Hill Rise NW Box 110',
+  '261 Sage Hill Box 104','339 Sage Hill Rise NW',
+  '3407 Merganser Dr W Chestermere Box 124','2223 Waterfront Box 57',
+  '216 111 14 Ave SE Box 123','1035 19th Ave SE Box 100',
+  '1101 60 Skyview Ranch Box 102','1811 Bankview Box 76',
+  '5030A 20 Ave NW Box 131','702 Firstpark Box 108','730 Firstpark Box 110',
+  '1629 38 St Unit 305 Box 115','707 135 13 Ave SW Colours',
+  '610 135 13 Ave SW Box 32','2206 135 13 Ave SW Colours Box 55',
+  '1909 135 13 Ave SW Colours Box 17','1907 135 13 Ave SW Colours Box 22',
+  '156 Sugarsnap Way SE Box 49','315 Upper Box 95',
+  '3411 Exshaw Rd NW Box 16','2030A 8 Ave SE',
+  '1501 8500 19 Ave SE Unit 107','Riverview Apartments Edmonton',
+  '10180 103 St NW Edmonton Encore Box 10'
+];
 
-// ── NOTION via Claude proxy ─────────────────────────────────────
-// We route ALL Notion calls through Claude (Anthropic API) because
-// Notion blocks direct browser CORS requests. Claude fetches via
-// its system-level access when we pass the data in context, OR
-// we use the Anthropic API with a tool that reads Notion.
-// Simpler approach: use a small Claude call to search properties.
+const sel = {h:null, c:null};
+const ddr = {h:[], c:[]};
+const ddi = {h:-1, c:-1};
+let ddT = null;
 
-async function searchProperties(query) {
-  if (!query || query.length < 2) return [];
-  // Call Claude asking it to return matching properties from a list
-  // we embed in the system prompt (avoids CORS entirely)
-  const system = `You are a property search assistant for Your Key Rental Management.
-When given a search query, return a JSON array of matching properties from the list below.
-Match against address, unit number, building name, or box number.
-Return ONLY a raw JSON array, no markdown. Max 6 results.
-Each result: {"address":"...","unit":"...","box":"...","label":"..."}
-The label should be the most human-readable version: "606 135 13th Ave SW" or "1010 6th St SW — Unit 1906".
-
-PROPERTY LIST:
-1010 615 6 Ave SE (Verve) Box 3
-606 135 13 Ave SW (Colours) Box 12
-323R 9A St NW (Annex) Box 39
-317R 9A St NW (Annex) Box 36
-325R 9A St NW (Annex) Box 40
-2-3812 Parkhill Pl SW Box 25
-1-3812 Parkhill Pl SW Box 24
-1906 1010 6th St SW Box 21
-2304 1010 6th St SW Box 59
-202 1010 6th St SW Box 66
-1302 1010 6th St SW Box 58
-706 1010 6th St SW Box 88
-912 ERA 455 1st Ave NE Box 89
-914 ERA 455 1st Ave NE Box 90
-1213 ERA 455 1st Ave NE Box 105
-105 210 ERA 123 4th St NE
-107 306 ERA 455 1st Ave NE
-1809 1188 3 St SE Box 20
-303 5th Ave NE Box 70
-516 2nd St NE Box 67
-520 2nd St NE Box 69
-307 2505 17 Ave SW (Casel) Box 35
-406 Polo Park Box 86
-1108 Premiere Way SE (Castle) Box 82
-273 Livingston View NW Box 63
-21 Kinlea Common NW Box 29
-18 Country Village Gate NE Box 18
-77 Corner Meadow Garden Box 128
-Box 119 111 Creekview Gardens
-Box 132 404 Cranbrook Gardens
-349 Sage Hill Rise NW Box 110
-261 Sage Hill Box 104
-339 Sage Hill Rise NW
-Box 124 3407 Merganser Dr W Chestermere
-2223 Waterfront Box 57
-Box 123 216 111 14 Ave SE
-1035 19th Ave SE Box 100
-1101 60 Skyview Ranch Box 102
-Box 76 1811 Bankview
-5030A 20 Ave NW Box 131
-Box 108 702 Firstpark
-1110 730 Firstpark
-Box 115 Unit 305 1629 38 St
-707 135 13 Ave SW (Colours)
-610 135 13 Ave SW Box 32
-2206 Colours Box 55
-1909 Colours Box 17
-1907 Colours Box 22
-Box 49 156 Sugarsnap Way SE
-315 Upper Box 95
-3411 Exshaw Rd NW Box 16
-2030A 8 Ave SE
-2-3812 Parkhill Pl SW Box 25
-1501 8500 19 Ave SE Unit 107
-Riverview Apartments Edmonton
-Bin 10 703 Encore 10180 103 St NW Edmonton
-Box 55 2206 Colours
-`;
-
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': ANTHROPIC_KEY,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 300,
-      system: system,
-      messages: [{ role: 'user', content: 'Search query: "' + query + '"' }]
-    })
-  });
-  if (!r.ok) throw new Error('API ' + r.status);
-  const d = await r.json();
-  const txt = d.content?.[0]?.text || '[]';
-  try {
-    const clean = txt.replace(/```json|```/g, '').trim();
-    return JSON.parse(clean);
-  } catch { return []; }
-}
-
-// ── PROPERTY AUTOCOMPLETE ───────────────────────────────────────
-function onPropInput(el, ctx) {
-  const q = el.value.trim();
-  const dd = document.getElementById(ctx + '-prop-dd');
-  clearTimeout(ddTimer);
-  if (!q || q.length < 2) { dd.className = 'prop-dropdown'; return; }
-  dd.className = 'prop-dropdown open';
-  dd.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:var(--muted);text-align:center">Searching...</div>';
-  ddTimer = setTimeout(async () => {
-    try {
-      const results = await searchProperties(q);
-      ddResults[ctx] = results;
-      ddIdx[ctx] = -1;
-      if (!results.length) {
-        dd.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:var(--muted);text-align:center">No properties found</div>';
-        return;
-      }
-      dd.innerHTML = '';
-      results.forEach((p, i) => {
-        const opt = document.createElement('div');
-        opt.className = 'prop-opt';
-        // Bold the matching part
-        const label = p.label || p.address;
-        const hi = label.replace(new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi'), '<b>$1</b>');
-        opt.innerHTML = hi;
-        opt.dataset.i = i;
-        opt.onclick = () => pickProp(ctx, p);
-        dd.appendChild(opt);
-      });
-    } catch(e) {
-      dd.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:#e53e3e;text-align:center">Search failed — check API key</div>';
+function propIn(el, ctx) {
+  const q = el.value.trim().toLowerCase();
+  const dd = document.getElementById(ctx+'-dd');
+  clearTimeout(ddT);
+  if (q.length < 1) { dd.className='prop-dd'; return; }
+  ddT = setTimeout(() => {
+    const matches = PROPS.filter(p => p.toLowerCase().includes(q)).slice(0, 8);
+    ddr[ctx] = matches; ddi[ctx] = -1;
+    if (!matches.length) {
+      dd.className = 'prop-dd open';
+      dd.innerHTML = '<div class="dd-msg">No properties found</div>';
+      return;
     }
-  }, 400);
+    dd.className = 'prop-dd open';
+    dd.innerHTML = '';
+    const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
+    matches.forEach((p, i) => {
+      const d = document.createElement('div');
+      d.className = 'dd-item';
+      d.innerHTML = p.replace(re, '<b>$1</b>');
+      d.dataset.i = i;
+      d.onclick = () => pickProp(ctx, p);
+      dd.appendChild(d);
+    });
+  }, 150);
 }
 
-function onPropKey(e, ctx) {
-  const dd = document.getElementById(ctx + '-prop-dd');
-  const opts = dd.querySelectorAll('.prop-opt');
-  if (!dd.classList.contains('open') || !opts.length) return;
-  if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    ddIdx[ctx] = Math.min(ddIdx[ctx] + 1, opts.length - 1);
-    opts.forEach((o, i) => o.className = 'prop-opt' + (i === ddIdx[ctx] ? ' hi' : ''));
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    ddIdx[ctx] = Math.max(ddIdx[ctx] - 1, 0);
-    opts.forEach((o, i) => o.className = 'prop-opt' + (i === ddIdx[ctx] ? ' hi' : ''));
-  } else if (e.key === 'Enter') {
-    e.preventDefault();
-    if (ddIdx[ctx] >= 0 && ddResults[ctx][ddIdx[ctx]]) pickProp(ctx, ddResults[ctx][ddIdx[ctx]]);
-  } else if (e.key === 'Escape') {
-    dd.className = 'prop-dropdown';
-  }
+function propKey(e, ctx) {
+  const dd = document.getElementById(ctx+'-dd');
+  const items = dd.querySelectorAll('.dd-item');
+  if (!dd.classList.contains('open') || !items.length) return;
+  if (e.key==='ArrowDown') { e.preventDefault(); ddi[ctx]=Math.min(ddi[ctx]+1,items.length-1); items.forEach((o,i)=>o.className='dd-item'+(i===ddi[ctx]?' hi':'')); }
+  else if (e.key==='ArrowUp') { e.preventDefault(); ddi[ctx]=Math.max(ddi[ctx]-1,0); items.forEach((o,i)=>o.className='dd-item'+(i===ddi[ctx]?' hi':'')); }
+  else if (e.key==='Enter') { e.preventDefault(); if(ddi[ctx]>=0 && ddr[ctx][ddi[ctx]]) pickProp(ctx, ddr[ctx][ddi[ctx]]); }
+  else if (e.key==='Escape') { dd.className='prop-dd'; }
 }
 
 function pickProp(ctx, p) {
   sel[ctx] = p;
-  const label = p.label || p.address;
-  document.getElementById(ctx + '-pill-txt').textContent = '📍 ' + label;
-  document.getElementById(ctx + '-pill').className = 'prop-pill on';
-  document.getElementById(ctx + '-prop-row').style.display = 'none';
-  document.getElementById(ctx + '-prop-dd').className = 'prop-dropdown';
-  document.getElementById(ctx + '-prop-input').value = '';
-  // Sync to chat ctx if picking from home
-  if (ctx === 'home') { sel.chat = p; syncPropToChat(p, label); }
-  document.getElementById(ctx + '-ask').focus();
-}
-
-function syncPropToChat(p, label) {
-  sel.chat = p;
-  document.getElementById('chat-pill-txt').textContent = '📍 ' + label;
-  document.getElementById('chat-pill').className = 'prop-pill on';
-  document.getElementById('chat-prop-row').style.display = 'none';
+  document.getElementById(ctx+'-pill-txt').textContent = '📍 ' + p;
+  document.getElementById(ctx+'-pill').className = 'prop-pill on';
+  document.getElementById(ctx+'-pr').style.display = 'none';
+  document.getElementById(ctx+'-dd').className = 'prop-dd';
+  document.getElementById(ctx+'-pi').value = '';
+  if (ctx==='h') { sel.c=p; document.getElementById('c-pill-txt').textContent='📍 '+p; document.getElementById('c-pill').className='prop-pill on'; document.getElementById('c-pr').style.display='none'; }
+  document.getElementById(ctx+'-ask').focus();
 }
 
 function clearProp(ctx) {
-  sel[ctx] = null;
-  document.getElementById(ctx + '-pill').className = 'prop-pill';
-  document.getElementById(ctx + '-prop-row').style.display = 'flex';
-  document.getElementById(ctx + '-prop-input').value = '';
-  document.getElementById(ctx + '-prop-dd').className = 'prop-dropdown';
+  sel[ctx]=null;
+  document.getElementById(ctx+'-pill').className='prop-pill';
+  document.getElementById(ctx+'-pr').style.display='flex';
+  document.getElementById(ctx+'-pi').value='';
+  document.getElementById(ctx+'-dd').className='prop-dd';
 }
 
-// Close dd on outside click
 document.addEventListener('click', e => {
-  ['home','chat'].forEach(ctx => {
-    const dd = document.getElementById(ctx + '-prop-dd');
-    const row = document.getElementById(ctx + '-prop-row');
-    if (dd && row && !row.contains(e.target) && !dd.contains(e.target))
-      dd.className = 'prop-dropdown';
+  ['h','c'].forEach(ctx => {
+    const dd=document.getElementById(ctx+'-dd'), pr=document.getElementById(ctx+'-pr');
+    if(dd && pr && !pr.contains(e.target) && !dd.contains(e.target)) dd.className='prop-dd';
   });
 });
 
-// ── CLAUDE MAIN ANSWER ──────────────────────────────────────────
-async function askClaude(question, property, history) {
-  const sys = `You are the Your Key Rental Management internal AI assistant for Calgary STR operations. You help GRAs, STR Associates, and Portfolio Managers handle guest issues and operational questions quickly and confidently.
+// ── CLAUDE ───────────────────────────────────────────────────────
+const history = [];
 
-TONE: Friendly, direct, practical. Talk like a knowledgeable colleague, not a robot.
-FORMAT: Answer directly. Use numbered steps for processes. End every answer with "Confidence: Confirmed / Likely / Check with PM".
-ESCALATE TO PM: refunds or compensation, repair costs over $200, any owner contact, safety emergencies (911 first).
+async function ask(q, prop) {
+  const sys = `You are the Your Key Rental Management internal AI assistant for Calgary STR operations. Help GRAs, STR Associates, and Portfolio Managers quickly and confidently.
 
-KNOWLEDGE BASE (Verified):
-- Guest locked out / door code not working: Ask guest to confirm correct unit, enter code slowly waiting for beep between digits, hold Schlage button 3s to wake. If still failing, contact PM immediately.
-- WiFi down: Check correct network name and password. Ask guest to forget and reconnect. Unplug modem 30s, replug, wait 2min. If still down log in Maintenance Log.
-- No hot water: Check if electric (reset breaker labeled HWT) or gas (relight pilot on unit). If unresolved in 30min, log as Priority: Urgent and notify PM immediately.
-- Heat not working: Confirm thermostat set to HEAT mode, temp above current room temp. Check furnace room door not ajar. Check furnace breaker. If unresolved 20min in Calgary winter = urgent.
-- Smoke/CO alarm beeping: Single beep = low battery, replace 9V. Continuous = evacuate and call 911.
-- TV not working: Check power bar, correct HDMI input, Fire Stick batteries. Unplug cable box 30s.
-- Washer/dryer: Check door latch, cycle selector, lint trap, breaker.
-- Parking issues: Check GE Master for stall number and parking process. Equium manages building FOB issues.
-- Early check-in/late checkout: Never confirm without checking bookings gap. PM approval needed.
-- Compensation for amenity failure: Bathroom out of service = 30% discount (PM approval). Fridge down = cooler + ice. Always escalate before committing.
-- Radiator banging noise (406 Polo): Normal building behaviour, building management cannot action.
-- Annex locks (317R, 323R, 325R): Recurring issue, escalate early. Door specialists: Enlive Doors, Ability Lock, Calgary Door Services.
-- Clogged sink: Snake first, then Drano 30min, then hot water. If still blocked after 2 attempts, call plumber.
-- Schlage lock offline codes: Press Schlage button 3s, enter programming code, follow prompts. Works without WiFi.
-- 273 Livingston WiFi/lock failure: Check internet speed first (should be 150+ Mbps). Contact Shaw if slow.
-- GE appliance repair: Call 1-800-561-3344 (5am-3pm Calgary). First visit = diagnosis only, payment required before repair visit.${property ? '\n\nSELECTED PROPERTY: ' + (property.label || property.address) + (property.box ? ' (' + property.box + ')' : '') : ''}`;
+TONE: Friendly, direct, practical — like a knowledgeable colleague.
+FORMAT: Answer directly. Numbered steps for processes. End with "Confidence: Confirmed / Likely / Check with PM".
+ESCALATE: refunds or compensation → PM only. Repair costs over $200 → PM approval. Owner contact → forward to PM. Safety emergencies → 911 first.
 
-  const messages = [...(history || []), { role: 'user', content: question }];
+KNOWLEDGE BASE:
+- Door code not working: Confirm correct unit/door. Enter code slowly with pause between digits. Hold Schlage button 3s to wake. If still failing → contact PM immediately, do not leave guest without access.
+- Schlage offline code programming: Press Schlage button 3s, enter programming code from lock documentation, follow prompts. Works without WiFi.
+- WiFi down: Correct network name and password? Forget and reconnect. Unplug modem 30s, replug, wait 2min. If down → Maintenance Log.
+- No hot water: Electric = check breaker labeled HWT. Gas = relight pilot on unit. Unresolved 30min = Priority Urgent, notify PM.
+- Heat not working: HEAT mode on thermostat? Temp set above room temp? Furnace room door closed? Check furnace breaker. Calgary winter = urgent after 20min.
+- Smoke alarm single beep: Low battery, replace 9V. Continuous alarm = evacuate, call 911.
+- CO alarm: Evacuate immediately, call 911, do not re-enter.
+- TV not working: Power bar on? Correct HDMI input? Unplug cable box 30s. Fire Stick needs batteries.
+- Washer/dryer: Door fully latched? Cycle selector clicked? Lint trap clean? Check breaker (dryers on double breaker).
+- Clogged sink: Snake first. Then Drano 30min + hot water flush. Repeat once. Still blocked = call plumber.
+- Radiator banging (406 Polo): Normal building behaviour, building mgmt cannot action.
+- Annex locks (317R, 323R, 325R): Recurring failure history. Escalate early. Door vendors: Enlive Doors, Ability Lock, Calgary Door Services. Avoid All Kind Doors (slow + $145 quote fee).
+- Parking issues: Check GE Master for stall number and process. FOB issues = contact Equium (building management).
+- Authorized parking tow (606 Colours): Stall is titled to owner, Equium cannot assist. Call Calgary Parking Authority.
+- Guest compensation: Bathroom out of service = 30% discount (PM must approve). Fridge down = cooler + ice. Never commit to refund without PM.
+- Early check-in / late checkout: Never confirm without checking booking gap. PM approval required.
+- GE appliance repair: 1-800-561-3344 (5am-3pm Calgary). First visit = diagnosis only, pay before repair visit. Tech: 1-403-951-1711.
+- 273 Livingston WiFi/lock failure: Run speed test first. Below 100 Mbps = call Shaw before replacing devices.
+- Wall repair vendors: Andre (GSA Home Solutions) = good. Tarik/Nizar = confirm scope in writing. Over $500 = owner pays directly.
+- 18 Country Village Gate NE: Owner buys all their own supplies. Do NOT order and bill to YK. Message owner when running low.
+- 914 ERA buzzer: 3637.
+- 307 Casel building hours: Mon-Fri 7:15am-7:15pm, Sat-Sun 7:15am-4pm. Outside hours = intercom required.
+- Supplying 303 5th Ave NE bin codes: 303 bins = 487. 516 bins = 403. 518 bins = 587.
+- 3812 Parkhill microwave/outlet: Grey relay box near panel must be in CLOSED position. Switch 19 is sensitive. Sparking = call electrician, bring backup microwave.
+- 1010 Verve scan tag: One team scan tag kept in office only. Guest round tag stays in suite. Remote opens elevator and front door.
+- Furnace filter 606 Colours: Remove white grid, unscrew 3 screws on metal band, insert filter. Watch for loose screw on top of box near laundry.${prop ? '\n\nPROPERTY IN CONTEXT: ' + prop : ''}`;
 
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
+  const messages = [...history, {role:'user', content:q}];
+  const r = await fetch(PROXY_URL, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': ANTHROPIC_KEY,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      system: sys,
-      messages: messages
-    })
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({model:'claude-sonnet-4-20250514', max_tokens:1000, system:sys, messages})
   });
   if (!r.ok) {
-    const err = await r.text();
-    throw new Error('API ' + r.status + ': ' + err.substring(0, 100));
+    const t = await r.text();
+    throw new Error('n8n proxy error ' + r.status + ': ' + t.substring(0,120));
   }
   const d = await r.json();
-  return d.content?.[0]?.text || 'No response received.';
+  return d.content?.[0]?.text || 'No response.';
 }
-
-// ── CHAT HISTORY ────────────────────────────────────────────────
-const chatHistory = [];
 
 // ── SEND ─────────────────────────────────────────────────────────
 async function send(ctx) {
-  const askEl = document.getElementById(ctx + '-ask');
-  const btn = document.getElementById(ctx + '-send');
+  const askEl = document.getElementById(ctx+'-ask');
+  const btn = document.getElementById(ctx+'-btn');
   const q = askEl.value.trim();
   if (!q) return;
-
+  askEl.value=''; ar(askEl); btn.disabled=true;
+  if (ctx==='h') { document.getElementById('home-page').style.display='none'; document.getElementById('chat-page').style.display='flex'; }
   const prop = sel[ctx];
-  askEl.value = ''; autoResize(askEl); btn.disabled = true;
-
-  if (ctx === 'home') {
-    document.getElementById('home-page').style.display = 'none';
-    document.getElementById('chat-page').style.display = 'flex';
-  }
-
-  const propLabel = prop ? (prop.label || prop.address) : null;
-  addMsg('user', q, propLabel);
+  addMsg('user', q, prop);
   addMsg('thinking');
-
   try {
-    const ans = await askClaude(q, prop, chatHistory);
+    const ans = await ask(q, prop);
     document.getElementById('thinking-msg')?.remove();
-    chatHistory.push({ role: 'user', content: q });
-    chatHistory.push({ role: 'assistant', content: ans });
+    history.push({role:'user',content:q});
+    history.push({role:'assistant',content:ans});
     addMsg('ai', ans);
   } catch(e) {
     document.getElementById('thinking-msg')?.remove();
     addMsg('ai', 'Error: ' + e.message + '\n\nConfidence: Check with PM');
   }
-  btn.disabled = false;
-  document.getElementById('chat-ask')?.focus();
+  btn.disabled=false;
+  document.getElementById('c-ask')?.focus();
 }
 
 // ── RENDER ───────────────────────────────────────────────────────
-function addMsg(role, content, propLabel) {
+function addMsg(role, content, prop) {
   const msgs = document.getElementById('chat-msgs');
   const msg = document.createElement('div');
   msg.className = 'msg ' + role;
-
-  if (role === 'user') {
-    const b = document.createElement('div'); b.className = 'bubble';
-    if (propLabel) {
-      const t = document.createElement('div'); t.className = 'prop-tag';
-      t.textContent = '📍 ' + propLabel; b.appendChild(t);
-    }
+  if (role==='user') {
+    const b = document.createElement('div'); b.className='bubble';
+    if (prop) { const t=document.createElement('div'); t.className='prop-tag'; t.textContent='📍 '+prop; b.appendChild(t); }
     b.appendChild(document.createTextNode(content));
     msg.appendChild(b);
-
-  } else if (role === 'thinking') {
-    const b = document.createElement('div'); b.className = 'bubble'; b.id = 'thinking-bub';
-    const d = document.createElement('div'); d.className = 'dots';
-    d.innerHTML = '<span></span><span></span><span></span>';
-    b.appendChild(d); msg.id = 'thinking-msg'; msg.appendChild(b);
-
+  } else if (role==='thinking') {
+    const b=document.createElement('div'); b.className='bubble'; b.id='thinking-bub';
+    const d=document.createElement('div'); d.className='dots'; d.innerHTML='<span></span><span></span><span></span>';
+    b.appendChild(d); msg.id='thinking-msg'; msg.appendChild(b);
   } else {
-    const b = document.createElement('div'); b.className = 'bubble';
-    const a = document.createElement('div'); a.className = 'ai-answer';
-    a.innerHTML = fmt(content); b.appendChild(a);
-    const cm = content.match(/Confidence:\s*(Confirmed|Likely|Check with PM)/i);
-    if (cm) {
-      const c = document.createElement('div');
-      const lv = cm[1].toLowerCase().replace(/ /g, '-');
-      c.className = 'conf ' + (lv === 'confirmed' ? 'confirmed' : lv === 'likely' ? 'likely' : 'check');
-      c.textContent = (lv === 'confirmed' ? '✓ ' : lv === 'likely' ? '~ ' : '⚠ ') + cm[1];
-      b.appendChild(c);
-    }
+    const b=document.createElement('div'); b.className='bubble';
+    const a=document.createElement('div'); a.className='ai-answer'; a.innerHTML=fmt(content); b.appendChild(a);
+    const cm=content.match(/Confidence:\s*(Confirmed|Likely|Check with PM)/i);
+    if (cm) { const c=document.createElement('div'); const lv=cm[1].toLowerCase().replace(/ /g,'-'); c.className='conf '+(lv==='confirmed'?'confirmed':lv==='likely'?'likely':'check'); c.textContent=(lv==='confirmed'?'✓ ':lv==='likely'?'~ ':'⚠ ')+cm[1]; b.appendChild(c); }
     msg.appendChild(b);
   }
   msgs.appendChild(msg);
-  msgs.scrollTop = msgs.scrollHeight;
+  msgs.scrollTop=msgs.scrollHeight;
 }
 
 function fmt(text) {
-  text = text.replace(/\nConfidence:\s*.+$/im, '');
-  text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  const lines = text.split('\n'); let inList = false, res = '';
-  lines.forEach(l => {
-    const n = l.match(/^(\d+)\.\s/);
-    if (n) { if (!inList) { res += '<ol>'; inList = true; } res += '<li>' + l.replace(/^\d+\.\s/, '') + '</li>'; }
-    else { if (inList) { res += '</ol>'; inList = false; } if (l.trim()) res += '<p>' + l + '</p>'; }
-  });
-  if (inList) res += '</ol>';
-  return res || '<p>' + text + '</p>';
+  text=text.replace(/\nConfidence:\s*.+$/im,'').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  const lines=text.split('\n'); let inList=false, res='';
+  lines.forEach(l=>{ const n=l.match(/^(\d+)\.\s/); if(n){if(!inList){res+='<ol>';inList=true;}res+='<li>'+l.replace(/^\d+\.\s/,'')+'</li>';}else{if(inList){res+='</ol>';inList=false;}if(l.trim())res+='<p>'+l+'</p>';}});
+  if(inList)res+='</ol>';
+  return res||'<p>'+text+'</p>';
 }
 
-function handleKey(e, ctx) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(ctx); } }
-function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 140) + 'px'; }
+function hk(e, ctx) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(ctx);} }
+function ar(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,140)+'px'; }
 </script>
 </body>
 </html>
