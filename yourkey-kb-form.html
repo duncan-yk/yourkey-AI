@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Your Key — KB Quick Entry</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--green:#1D9E75;--black:#111;--gray:#f4f4f1;--border:#e4e4de;--muted:#888;--shadow:0 2px 12px rgba(0,0,0,.08)}
+body{font-family:'DM Sans',sans-serif;background:var(--gray);color:var(--black);min-height:100vh}
+.header{background:var(--black);padding:0 20px;height:56px;display:flex;align-items:center;gap:10px}
+.logo-mark{width:28px;height:28px;background:var(--green);border-radius:6px;display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.logo-text{font-size:14px;font-weight:700;color:#fff}
+.logo-text span{color:var(--green)}
+.container{max-width:560px;margin:0 auto;padding:24px 16px 40px}
+h1{font-size:22px;font-weight:700;margin-bottom:6px}
+.subtitle{font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.5}
+.form-group{margin-bottom:18px}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;font-family:'DM Mono',monospace;letter-spacing:.02em;color:#444}
+input,textarea,select{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--black);background:#fff;transition:border-color .15s}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--black)}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+textarea{resize:vertical;min-height:80px;line-height:1.5}
+.submit-btn{width:100%;padding:14px;background:var(--black);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:8px;transition:background .15s}
+.submit-btn:hover{background:#333}
+.submit-btn:disabled{background:var(--border);cursor:not-allowed}
+.success{display:none;background:#e8f8f3;border:1.5px solid var(--green);border-radius:12px;padding:20px;text-align:center;margin-top:16px}
+.success h3{color:var(--green);font-size:16px;margin-bottom:6px}
+.success p{font-size:14px;color:#444}
+.another-btn{margin-top:12px;padding:10px 20px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo-mark"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+  <div class="logo-text">Your <span>Key</span> — KB Entry</div>
+</div>
+<div class="container">
+  <h1>Submit a Knowledge Base Entry</h1>
+  <p class="subtitle">Share something you learned — a guest issue you solved, a property quirk, a procedure. Your PM will review and verify it before it goes live.</p>
+  <div id="form-wrap">
+    <div class="form-group">
+      <label>PROPERTY ADDRESS</label>
+      <input type="text" id="property" placeholder="e.g. 606 135 13th Ave SW — or leave blank for general">
+    </div>
+    <div class="form-group">
+      <label>ISSUE / SYMPTOM *</label>
+      <textarea id="symptom" placeholder="What was the guest issue or situation?" rows="2"></textarea>
+    </div>
+    <div class="form-group">
+      <label>RESOLUTION / STEPS *</label>
+      <textarea id="resolution" placeholder="What did you do to fix it? Be specific — numbered steps are great." rows="4"></textarea>
+    </div>
+    <div class="form-group">
+      <label>CATEGORY</label>
+      <select id="category">
+        <option value="Guest issue">Guest issue</option>
+        <option value="Access / Check-in">Access / Check-in</option>
+        <option value="Maintenance">Maintenance</option>
+        <option value="Owner preference">Owner preference</option>
+        <option value="Safety">Safety</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>YOUR NAME</label>
+      <input type="text" id="submitter" placeholder="So your PM knows who submitted this">
+    </div>
+    <div class="form-group">
+      <label>EXTRA NOTES (optional)</label>
+      <textarea id="notes" placeholder="Anything else worth knowing?" rows="2"></textarea>
+    </div>
+    <button class="submit-btn" id="submit-btn" onclick="submitEntry()">Submit KB Entry</button>
+  </div>
+  <div class="success" id="success">
+    <h3>✓ KB entry submitted!</h3>
+    <p>Your PM will review and verify it. Once verified it will be live in the AI Assistant.</p>
+    <button class="another-btn" onclick="resetForm()">Submit another</button>
+  </div>
+</div>
+<script>
+const NOTION_TOKEN='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';
+const KB_DB_ID='7b324a42-e2bd-445f-8423-e93dccf64592';
+
+async function submitEntry(){
+  const symptom=document.getElementById('symptom').value.trim();
+  const resolution=document.getElementById('resolution').value.trim();
+  if(!symptom||!resolution){alert('Please fill in the Issue and Resolution fields.');return;}
+  const property=document.getElementById('property').value.trim()||'General';
+  const category=document.getElementById('category').value;
+  const submitter=document.getElementById('submitter').value.trim()||'Team';
+  const notes=document.getElementById('notes').value.trim();
+  const btn=document.getElementById('submit-btn');
+  btn.disabled=true;btn.textContent='Submitting...';
+  const note=(property==='General'?'General — ':property+' — ')+symptom.substring(0,60);
+  const extraNotes='Property: '+property+'\nSubmitted by: '+submitter+(notes?'\n'+notes:'');
+  try{
+    const r=await fetch('https://api.notion.com/v1/pages',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+NOTION_TOKEN,'Notion-Version':'2022-06-28','Content-Type':'application/json'},
+      body:JSON.stringify({
+        parent:{database_id:KB_DB_ID},
+        properties:{
+          'Note':{title:[{text:{content:note.substring(0,80)}}]},
+          'Symptom / Question':{rich_text:[{text:{content:symptom.substring(0,2000)}}]},
+          'Resolution / Answer':{rich_text:[{text:{content:resolution.substring(0,2000)}}]},
+          'Category':{select:{name:category}},
+          'Confidence':{select:{name:'Likely'}},
+          'Source':{select:{name:'GRA'}},
+          'Verification status':{status:{name:'Needs verification'}},
+          'Extra notes':{rich_text:[{text:{content:extraNotes}}]}
+        }
+      })
+    });
+    if(r.ok){document.getElementById('form-wrap').style.display='none';document.getElementById('success').style.display='block';}
+    else{throw new Error('API error '+r.status);}
+  }catch(e){alert('Something went wrong. Please try again.\n'+e.message);btn.disabled=false;btn.textContent='Submit KB Entry';}
+}
+
+function resetForm(){
+  ['property','symptom','resolution','submitter','notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('category').value='Guest issue';
+  document.getElementById('form-wrap').style.display='block';
+  document.getElementById('success').style.display='none';
+  document.getElementById('submit-btn').disabled=false;
+  document.getElementById('submit-btn').textContent='Submit KB Entry';
+}
+</script>
+</body>
+</html>
